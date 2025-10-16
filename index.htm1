@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بنك أسئلة الكيمياء التفاعلي</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            transition: background 0.5s ease;
+        }
+        
+        .quiz-container {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 800px;
+            padding: 30px;
+            color: #333;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .start-screen {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+        }
+        
+        .question-screen {
+            background-color: white;
+            color: #333;
+        }
+        
+        .results-screen {
+            background-color: white;
+            color: #333;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #f8f9fa;
+        }
+        
+        .start-screen h1 {
+            color: white;
+        }
+        
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        
+        .question-number {
+            font-size: 1.2rem;
+            color: #3498db;
+            margin-bottom: 10px;
+        }
+        
+        .question-text {
+            font-size: 1.4rem;
+            margin-bottom: 25px;
+            line-height: 1.5;
+            color: #2c3e50;
+        }
+        
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .option {
+            background-color: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: right;
+            font-size: 1.1rem;
+        }
+        
+        .option:hover {
+            background-color: #e9ecef;
+            transform: translateY(-2px);
+        }
+        
+        .option.selected {
+            background-color: #3498db;
+            color: white;
+            border-color: #2980b9;
+        }
+        
+        .option.correct {
+            background-color: #2ecc71;
+            color: white;
+            border-color: #27ae60;
+        }
+        
+        .option.incorrect {
+            background-color: #e74c3c;
+            color: white;
+            border-color: #c0392b;
+        }
+        
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            display: none;
+        }
+        
+        .feedback.correct {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+        
+        .feedback.incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+        
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 25px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        
+        .timer {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #e74c3c;
+            background-color: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .results-container {
+            text-align: right;
+        }
+        
+        .score {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 20px 0;
+        }
+        
+        .progress-bar {
+            height: 20px;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: #2ecc71;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .question-review {
+            margin-top: 30px;
+            text-align: right;
+        }
+        
+        .review-item {
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+        }
+        
+        .review-item.correct {
+            border-left: 5px solid #2ecc71;
+        }
+        
+        .review-item.incorrect {
+            border-left: 5px solid #e74c3c;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        @media (max-width: 600px) {
+            .quiz-container {
+                padding: 20px;
+                width: 95%;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+            }
+            
+            .question-text {
+                font-size: 1.2rem;
+            }
+            
+            .option {
+                font-size: 1rem;
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container start-screen" id="start-screen">
+        <h1>بنك أسئلة الكيمياء التفاعلي</h1>
+        <div class="form-group">
+            <label for="student-name">اسم الطالب:</label>
+            <input type="text" id="student-name" placeholder="أدخل اسمك هنا">
+        </div>
+        <div class="form-group">
+            <label for="student-class">الشعبة:</label>
+            <select id="student-class">
+                <option value="">اختر الشعبة</option>
+                <option value="علمي">علمي</option>
+                <option value="أدبي">أدبي</option>
+                <option value="مختلط">مختلط</option>
+            </select>
+        </div>
+        <button id="start-btn">ابدأ الاختبار</button>
+    </div>
+
+    <div class="quiz-container question-screen hidden" id="question-screen">
+        <div class="timer" id="timer">30:00</div>
+        <div class="question-number" id="question-number">السؤال 1 من 50</div>
+        <h2 id="question-text">السؤال يظهر هنا</h2>
+        <div class="options-container" id="options-container">
+            <!-- سيتم ملء الخيارات ديناميكيًا -->
+        </div>
+        <div class="feedback" id="feedback"></div>
+        <div class="navigation-buttons">
+            <button id="prev-btn" disabled>السابق</button>
+            <button id="next-btn">التالي</button>
+        </div>
+    </div>
+
+    <div class="quiz-container results-screen hidden" id="results-screen">
+        <h1>نتيجة الاختبار</h1>
+        <div class="results-container">
+            <p><strong>اسم الطالب:</strong> <span id="result-name"></span></p>
+            <p><strong>الشعبة:</strong> <span id="result-class"></span></p>
+            <p><strong>الوقت المستغرق:</strong> <span id="time-taken"></span></p>
+            <div class="score" id="score">0/50</div>
+            <div class="progress-bar">
+                <div class="progress" id="progress-bar"></div>
+            </div>
+            <div class="question-review" id="question-review">
+                <!-- سيتم ملء مراجعة الأسئلة ديناميكيًا -->
+            </div>
+            <button id="restart-btn">إعادة الاختبار</button>
+        </div>
+    </div>
+
+    <script>
+        // بيانات الأسئلة من الملف
+        const questions = [
+            {
+                text: "أي مما يلي يعد مخلوطًا متجانسًا؟",
+                options: [
+                    { text: "عصير البرتقال مع اللب", correct: false },
+                    { text: "محلول السكر في الماء", correct: true },
+                    { text: "السلطة الخضراء", correct: false }
+                ]
+            },
+            {
+                text: "المخلوط الذي يمكن رؤية مكوناته بالعين المجردة يسمى:",
+                options: [
+                    { text: "متجانس", correct: false },
+                    { text: "غير متجانس", correct: true },
+                    { text: "محلول", correct: false }
+                ]
+            },
+            {
+                text: "أي من الآتي مثال على مخلوط متجانس؟",
+                options: [
+                    { text: "خليط الملح والماء", correct: true },
+                    { text: "خليط الرمل والحصى", correct: false },
+                    { text: "السلطة", correct: false }
+                ]
+            },
+            {
+                text: "المخاليط المتجانسة تتميز بأن:",
+                options: [
+                    { text: "مكوناتها تتوزع بالتساوي في كل أجزاء المخلوط", correct: true },
+                    { text: "يمكن فصل مكوناتها بسهولة باليد", correct: false },
+                    { text: "مكوناتها غير قابلة للذوبان", correct: false }
+                ]
+            },
+            {
+                text: "أي مما يلي ليس مخلوطًا؟",
+                options: [
+                    { text: "الهواء", correct: false },
+                    { text: "الماء المقطر", correct: true },
+                    { text: "عصير فواكه مخلوط", correct: false }
+                ]
+            },
+            {
+                text: "المخلوط الذي يظهر فيه مكون واحد فقط بوضوح يسمى:",
+                options: [
+                    { text: "متجانس", correct: false },
+                    { text: "غير متجانس", correct: true },
+                    { text: "مركب", correct: false }
+                ]
+            },
+            {
+                text: "إذا وضعت السكر في الماء حتى يذوب بالكامل فإن الناتج يسمى:",
+                options: [
+                    { text: "مخلوط متجانس", correct: true },
+                    { text: "مخلوط غير متجانس", correct: false },
+                    { text: "عنصر", correct: false }
+                ]
+            },
+            {
+                text: "أي من المخاليط التالية متجانسة؟",
+                options: [
+                    { text: "الزيت والماء", correct: false },
+                    { text: "محلول ملح في الماء", correct: true },
+                    { text: "الرمل والماء", correct: false }
+                ]
+            },
+            {
+                text: "المخلوط غير المتجانس يتميز بأن:",
+                options: [
+                    { text: "مكوناته لا يمكن فصلها", correct: false },
+                    { text: "يمكن رؤية مكوناته بالعين المجردة", correct: true },
+                    { text: "مكوناته كلها ذائبة", correct: false }
+                ]
+            },
+            {
+                text: "أي مما يلي يعتبر مثالًا على مخلوط غير متجانس؟",
+                options: [
+                    { text: "الهواء", correct: false },
+                    { text: "خليط الرمل والحصى", correct: true },
+                    { text: "محلول السكر في الماء", correct: false }
+                ]
+            },
+            {
+                text: "أي طريقة تستخدم لفصل الرمل عن الماء؟",
+                options: [
+                    { text: "التقطير", correct: false },
+                    { text: "الترشيح", correct: true },
+                    { text: "التبخر", correct: false }
+                ]
+            },
+            {
+                text: "طريقة فصل الملح عن الماء تعتمد على:",
+                options: [
+                    { text: "التبخر", correct: true },
+                    { text: "الترشيح", correct: false },
+                    { text: "التقطير", correct: false }
+                ]
+            },
+            {
+                text: "أي من الطرق التالية تفصل الحديد عن خليط مع الرمل؟",
+                options: [
+                    { text: "المغناطيس", correct: true },
+                    { text: "الترشيح", correct: false },
+                    { text: "التقطير", correct: false }
+                ]
+            },
+            {
+                text: "التقطير يستخدم لفصل:",
+                options: [
+                    { text: "مكونات خليط صلب", correct: false },
+                    { text: "مكونات خليط سائل متجانس", correct: true },
+                    { text: "مكونات خليط غازي", correct: false }
+                ]
+            },
+            {
+                text: "الترشيح يستخدم لفصل:",
+                options: [
+                    { text: "محلول ملح في ماء", correct: false },
+                    { text: "رمل عن ماء", correct: true },
+                    { text: "هواء عن أكسجين", correct: false }
+                ]
+            },
+            {
+                text: "أي مما يلي يعد محلولًا؟",
+                options: [
+                    { text: "ملح الطعام في الماء", correct: true },
+                    { text: "الرمل في الماء", correct: false },
+                    { text: "الزيت في الماء", correct: false }
+                ]
+            },
+            {
+                text: "المحاليل التي تحتوي على كمية كبيرة من المذاب تسمى:",
+                options: [
+                    { text: "مشبعة", correct: false },
+                    { text: "مركزة", correct: true },
+                    { text: "مخففة", correct: false }
+                ]
+            },
+            {
+                text: "أي من الأنواع التالية مذيبها الماء؟",
+                options: [
+                    { text: "محلول ملح الطعام", correct: true },
+                    { text: "محلول السكر في الزيت", correct: false },
+                    { text: "خليط الرمل والحصى", correct: false }
+                ]
+            },
+            {
+                text: "محلول يحتوي على أقل كمية من المذاب يسمى:",
+                options: [
+                    { text: "مخفف", correct: true },
+                    { text: "مشبع", correct: false },
+                    { text: "مركز", correct: false }
+                ]
+            },
+            {
+                text: "أي من الآتي مثال على محلول غازي؟",
+                options: [
+                    { text: "الهواء", correct: true },
+                    { text: "الماء والملح", correct: false },
+                    { text: "الزيت والماء", correct: false }
+                ]
+            },
+            {
+                text: "الجدول الدوري ينظم العناصر حسب:",
+                options: [
+                    { text: "الكتلة الذرية", correct: true },
+                    { text: "اللون", correct: false },
+                    { text: "الكثافة", correct: false }
+                ]
+            },
+            {
+                text: "أي من التالي صفه صحيحة للعناصر في الجدول الدوري؟",
+                options: [
+                    { text: "لها نفس الخصائص الكيميائية في العمود الواحد", correct: true },
+                    { text: "تختلف خصائصها الكيميائية في العمود الواحد", correct: false },
+                    { text: "ترتيبها عشوائي", correct: false }
+                ]
+            },
+            {
+                text: "قانون النسب المتضاعفة ينطبق على:",
+                options: [
+                    { text: "العناصر", correct: false },
+                    { text: "المركبات الكيميائية", correct: true },
+                    { text: "المخاليط", correct: false }
+                ]
+            },
+            {
+                text: "إذا جمع عنصران ليكوّنا مركبًا، فإن نسب كتلتهما:",
+                options: [
+                    { text: "عشوائية", correct: false },
+                    { text: "ثابتة ومضاعفة", correct: true },
+                    { text: "تعتمد على الحجم فقط", correct: false }
+                ]
+            },
+            {
+                text: "أي عبارة صحيحة عن الجدول الدوري؟",
+                options: [
+                    { text: "يحتوي على عناصر مرتبة حسب العدد الذري", correct: true },
+                    { text: "يحتوي على عناصر مرتبة حسب الكتلة فقط", correct: false },
+                    { text: "يحتوي على مركبات مرتبة تصاعديًا", correct: false }
+                ]
+            },
+            {
+                text: "قانون النسب المتضاعفة يفسر:",
+                options: [
+                    { text: "سلوك العناصر في التفاعلات", correct: false },
+                    { text: "نسب العناصر في المركبات المختلفة", correct: true },
+                    { text: "كثافة المخاليط", correct: false }
+                ]
+            },
+            {
+                text: "العنصر الذي يملك نفس عدد البروتونات هو:",
+                options: [
+                    { text: "عنصر معين", correct: true },
+                    { text: "مركب", correct: false },
+                    { text: "خليط", correct: false }
+                ]
+            },
+            {
+                text: "المركب هو:",
+                options: [
+                    { text: "مادة نقية تتكون من عنصر واحد", correct: false },
+                    { text: "مادة نقية تتكون من عنصرين أو أكثر مرتبطة كيميائيًا", correct: true },
+                    { text: "خليط من عناصر", correct: false }
+                ]
+            },
+            {
+                text: "أي من التالي مثال على مركب؟",
+                options: [
+                    { text: "الأكسجين", correct: false },
+                    { text: "الماء", correct: true },
+                    { text: "الحديد", correct: false }
+                ]
+            },
+            {
+                text: "قانون النسب المتضاعفة ينطبق على:",
+                options: [
+                    { text: "تفاعلات العناصر فقط", correct: false },
+                    { text: "مركبات تحتوي على عنصرين مختلفين", correct: true },
+                    { text: "المخاليط فقط", correct: false }
+                ]
+            },
+            {
+                text: "العنصر هو:",
+                options: [
+                    { text: "مادة نقية تحتوي على نوع واحد من الذرات", correct: true },
+                    { text: "مادة تحتوي على ذرات مختلفة", correct: false },
+                    { text: "خليط من مواد", correct: false }
+                ]
+            },
+            {
+                text: "المركب يختلف عن العنصر في أنه:",
+                options: [
+                    { text: "يحتوي على ذرات عنصر واحد", correct: false },
+                    { text: "يحتوي على ذرات عنصرين أو أكثر مرتبطة كيميائيًا", correct: true },
+                    { text: "يمكن فصله بالطرق الفيزيائية", correct: false }
+                ]
+            },
+            {
+                text: "أي من التالي مثال على عنصر؟",
+                options: [
+                    { text: "الأكسجين", correct: true },
+                    { text: "الماء", correct: false },
+                    { text: "ملح الطعام", correct: false }
+                ]
+            },
+            {
+                text: "ملح الطعام اسمه العلمي:",
+                options: [
+                    { text: "كلوريد الصوديوم", correct: true },
+                    { text: "كبريتات الصوديوم", correct: false },
+                    { text: "هيدروكسيد الصوديوم", correct: false }
+                ]
+            },
+            {
+                text: "صيغة ملح الطعام الكيميائية هي:",
+                options: [
+                    { text: "NaCl", correct: true },
+                    { text: "KCl", correct: false },
+                    { text: "Na2SO4", correct: false }
+                ]
+            },
+            {
+                text: "المركب NaCl يتكون من:",
+                options: [
+                    { text: "صوديوم وكلور", correct: true },
+                    { text: "صوديوم وأكسجين", correct: false },
+                    { text: "كلور وأكسجين", correct: false }
+                ]
+            },
+            {
+                text: "الفرق الأساسي بين العنصر والمركب هو:",
+                options: [
+                    { text: "العنصر مادة نقية، والمركب مادة نقية تتكون من عنصرين أو أكثر", correct: true },
+                    { text: "العنصر خليط، والمركب عنصر", correct: false },
+                    { text: "المركب مادة غازية فقط", correct: false }
+                ]
+            },
+            {
+                text: "الملح يمكن فصله عن الماء بواسطة:",
+                options: [
+                    { text: "الترشيح", correct: false },
+                    { text: "التقطير", correct: false },
+                    { text: "التبخر", correct: true }
+                ]
+            },
+            {
+                text: "أي من التالي مركب أيوني؟",
+                options: [
+                    { text: "NaCl", correct: true },
+                    { text: "O2", correct: false },
+                    { text: "Fe", correct: false }
+                ]
+            },
+            {
+                text: "المركبات تختلف عن المخاليط لأنها:",
+                options: [
+                    { text: "قابلة للفصل بالطرق الفيزيائية", correct: false },
+                    { text: "تتكون من عناصر مرتبطة كيميائيًا", correct: true },
+                    { text: "تحتوي على عنصر واحد فقط", correct: false }
+                ]
+            },
+            {
+                text: "أفضل طريقة للحصول على ماء نقي من محلول ملحي هي:",
+                options: [
+                    { text: "الترشيح", correct: false },
+                    { text: "التقطير", correct: true },
+                    { text: "استخدام المغناطيس", correct: false }
+                ]
+            },
+            {
+                text: "إذا تبخر الماء من محلول ملحي، فإن ما يتبقى هو:",
+                options: [
+                    { text: "الملح", correct: true },
+                    { text: "السكر", correct: false },
+                    { text: "الرمل", correct: false }
+                ]
+            },
+            {
+                text: "التقطير البسيط يستخدم لفصل:",
+                options: [
+                    { text: "السوائل ذات نقاط غليان مختلفة", correct: true },
+                    { text: "المواد الصلبة فقط", correct: false },
+                    { text: "الغازات فقط", correct: false }
+                ]
+            },
+            {
+                text: "إذا كان لدينا 20 جرام ملح مذاب في 80 جرام ماء، ما نسبة الملح المئوية؟",
+                options: [
+                    { text: "20%", correct: true },
+                    { text: "25%", correct: false },
+                    { text: "15%", correct: false }
+                ]
+            },
+            {
+                text: "إذا ذاب 10 جرام سكر في 90 جرام ماء، فإن نسبة السكر المئوية هي:",
+                options: [
+                    { text: "10%", correct: true },
+                    { text: "9%", correct: false },
+                    { text: "11%", correct: false }
+                ]
+            },
+            {
+                text: "نسبة العنصر في مركب هي:",
+                options: [
+                    { text: "كمية العنصر بالنسبة للكتلة الكلية للمركب", correct: true },
+                    { text: "كمية العنصر في المخلوط", correct: false },
+                    { text: "حجم العنصر فقط", correct: false }
+                ]
+            },
+            {
+                text: "إذا احتوى محلول على 5 جرام ملح و95 جرام ماء، فالنسبة المئوية للملح هي:",
+                options: [
+                    { text: "5%", correct: true },
+                    { text: "10%", correct: false },
+                    { text: "15%", correct: false }
+                ]
+            },
+            {
+                text: "لحساب النسبة المئوية بالكتلة، نستخدم القانون:",
+                options: [
+                    { text: "(كتلة المكون ÷ الكتلة الكلية) × 100", correct: true },
+                    { text: "(الكتلة الكلية ÷ كتلة المكون) × 100", correct: false },
+                    { text: "كتلة المكون × 100", correct: false }
+                ]
+            },
+            {
+                text: "إذا كان لدينا 30 جرام NaCl مذاب في 70 جرام ماء، النسبة المئوية للملح هي:",
+                options: [
+                    { text: "30%", correct: true },
+                    { text: "25%", correct: false },
+                    { text: "40%", correct: false }
+                ]
+            },
+            {
+                text: "النسبة المئوية بالكتلة للمكون تعطي فكرة عن:",
+                options: [
+                    { text: "تركيز المكون في المركب أو المحلول", correct: true },
+                    { text: "نوع العنصر", correct: false },
+                    { text: "لون المحلول", correct: false }
+                ]
+            }
+        ];
+
+        // متغيرات التطبيق
+        let currentQuestion = 0;
+        let userAnswers = new Array(questions.length).fill(null);
+        let score = 0;
+        let timer;
+        let timeLeft = 30 * 60; // 30 دقيقة بالثواني
+        let startTime;
+        let audioContext;
+        let oscillator;
+
+        // عناصر DOM
+        const startScreen = document.getElementById('start-screen');
+        const questionScreen = document.getElementById('question-screen');
+        const resultsScreen = document.getElementById('results-screen');
+        const studentNameInput = document.getElementById('student-name');
+        const studentClassSelect = document.getElementById('student-class');
+        const startBtn = document.getElementById('start-btn');
+        const questionNumber = document.getElementById('question-number');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const feedback = document.getElementById('feedback');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const timerDisplay = document.getElementById('timer');
+        const resultName = document.getElementById('result-name');
+        const resultClass = document.getElementById('result-class');
+        const timeTaken = document.getElementById('time-taken');
+        const scoreDisplay = document.getElementById('score');
+        const progressBar = document.getElementById('progress-bar');
+        const questionReview = document.getElementById('question-review');
+        const restartBtn = document.getElementById('restart-btn');
+
+        // تهيئة الصوت
+        function initAudio() {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+
+        // تشغيل صوت النجاح
+        function playSuccessSound() {
+            if (!audioContext) return;
+            
+            oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
+            oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1); // E5
+            oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2); // G5
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + 0.5);
+        }
+
+        // بدء المؤقت
+        function startTimer() {
+            startTime = new Date();
+            timer = setInterval(updateTimer, 1000);
+        }
+
+        // تحديث المؤقت
+        function updateTimer() {
+            timeLeft--;
+            
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                endQuiz();
+                return;
+            }
+            
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // تنسيق الوقت
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // عرض السؤال الحالي
+        function displayQuestion() {
+            const question = questions[currentQuestion];
+            
+            questionNumber.textContent = `السؤال ${currentQuestion + 1} من ${questions.length}`;
+            questionText.textContent = question.text;
+            
+            optionsContainer.innerHTML = '';
+            question.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option';
+                if (userAnswers[currentQuestion] === index) {
+                    optionElement.classList.add('selected');
+                }
+                optionElement.textContent = option.text;
+                optionElement.addEventListener('click', () => selectOption(index));
+                optionsContainer.appendChild(optionElement);
+            });
+            
+            updateNavigationButtons();
+            feedback.className = 'feedback';
+            feedback.style.display = 'none';
+        }
+
+        // تحديث أزرار التنقل
+        function updateNavigationButtons() {
+            prevBtn.disabled = currentQuestion === 0;
+            nextBtn.textContent = currentQuestion === questions.length - 1 ? 'انهاء الاختبار' : 'التالي';
+        }
+
+        // اختيار إجابة
+        function selectOption(optionIndex) {
+            // إزالة التحديد من جميع الخيارات
+            document.querySelectorAll('.option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // تحديد الخيار المختار
+            document.querySelectorAll('.option')[optionIndex].classList.add('selected');
+            userAnswers[currentQuestion] = optionIndex;
+            
+            // التحقق من الإجابة وعرض التغذية الراجعة
+            const isCorrect = questions[currentQuestion].options[optionIndex].correct;
+            
+            if (isCorrect) {
+                feedback.textContent = 'إجابة صحيحة! أحسنت!';
+                feedback.className = 'feedback correct';
+                playSuccessSound();
+            } else {
+                feedback.textContent = 'إجابة خاطئة. حاول مرة أخرى!';
+                feedback.className = 'feedback incorrect';
+                
+                // إظهار الإجابة الصحيحة
+                const correctIndex = questions[currentQuestion].options.findIndex(option => option.correct);
+                document.querySelectorAll('.option')[correctIndex].classList.add('correct');
+                document.querySelectorAll('.option')[optionIndex].classList.add('incorrect');
+            }
+            
+            feedback.style.display = 'block';
+        }
+
+        // الانتقال إلى السؤال التالي
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                displayQuestion();
+            } else {
+                endQuiz();
+            }
+        }
+
+        // الانتقال إلى السؤال السابق
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                displayQuestion();
+            }
+        }
+
+        // إنهاء الاختبار وعرض النتائج
+        function endQuiz() {
+            clearInterval(timer);
+            
+            // حساب النتيجة
+            score = 0;
+            questions.forEach((question, index) => {
+                if (userAnswers[index] !== null && question.options[userAnswers[index]].correct) {
+                    score++;
+                }
+            });
+            
+            // حساب الوقت المستغرق
+            const endTime = new Date();
+            const timeUsed = Math.floor((endTime - startTime) / 1000);
+            const totalTime = 30 * 60;
+            const timeRemaining = totalTime - timeUsed;
+            
+            // عرض النتائج
+            resultName.textContent = studentNameInput.value;
+            resultClass.textContent = studentClassSelect.value;
+            timeTaken.textContent = formatTime(timeUsed);
+            scoreDisplay.textContent = `${score}/${questions.length}`;
+            progressBar.style.width = `${(score / questions.length) * 100}%`;
+            
+            // عرض مراجعة الأسئلة
+            questionReview.innerHTML = '';
+            questions.forEach((question, index) => {
+                const reviewItem = document.createElement('div');
+                const isCorrect = userAnswers[index] !== null && question.options[userAnswers[index]].correct;
+                
+                reviewItem.className = `review-item ${isCorrect ? 'correct' : 'incorrect'}`;
+                reviewItem.innerHTML = `
+                    <p><strong>السؤال ${index + 1}:</strong> ${question.text}</p>
+                    <p><strong>إجابتك:</strong> ${userAnswers[index] !== null ? question.options[userAnswers[index]].text : 'لم تجب'}</p>
+                    <p><strong>الإجابة الصحيحة:</strong> ${question.options.find(option => option.correct).text}</p>
+                `;
+                
+                questionReview.appendChild(reviewItem);
+            });
+            
+            // الانتقال إلى شاشة النتائج
+            questionScreen.classList.add('hidden');
+            resultsScreen.classList.remove('hidden');
+        }
+
+        // إعادة تعيين الاختبار
+        function resetQuiz() {
+            currentQuestion = 0;
+            userAnswers = new Array(questions.length).fill(null);
+            score = 0;
+            timeLeft = 30 * 60;
+            
+            startScreen.classList.remove('hidden');
+            questionScreen.classList.add('hidden');
+            resultsScreen.classList.add('hidden');
+            
+            studentNameInput.value = '';
+            studentClassSelect.value = '';
+        }
+
+        // إضافة مستمعي الأحداث
+        startBtn.addEventListener('click', () => {
+            if (studentNameInput.value.trim() === '' || studentClassSelect.value === '') {
+                alert('يرجى إدخال اسم الطالب واختيار الشعبة');
+                return;
+            }
+            
+            startScreen.classList.add('hidden');
+            questionScreen.classList.remove('hidden');
+            
+            initAudio();
+            startTimer();
+            displayQuestion();
+        });
+
+        prevBtn.addEventListener('click', prevQuestion);
+        nextBtn.addEventListener('click', nextQuestion);
+        restartBtn.addEventListener('click', resetQuiz);
+
+        // تهيئة التطبيق
+        displayQuestion();
+    </script>
+</body>
+</html>
